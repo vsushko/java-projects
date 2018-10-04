@@ -83,4 +83,11 @@ public class LinkedListTest {
         Assert.assertEquals(1, linkedList.getFirst());
         Assert.assertEquals(3, linkedList.getLast());
     }
+
+    // Size
+    // Clear
+    // Delete with value
+    // Remove front
+    // Remove back
+    // Contains
 }
