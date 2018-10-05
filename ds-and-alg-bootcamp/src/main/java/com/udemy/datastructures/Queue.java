@@ -1,6 +1,8 @@
 package com.udemy.datastructures;
 
 /**
+ * FIFO
+ *
  * @author vsushko
  */
 public class Queue {
