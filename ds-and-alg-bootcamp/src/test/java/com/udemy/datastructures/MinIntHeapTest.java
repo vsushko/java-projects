@@ -1,5 +1,6 @@
-package com.udemy.algorithms;
+package com.udemy.datastructures;
 
+import com.udemy.datastructures.MinIntHeap;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

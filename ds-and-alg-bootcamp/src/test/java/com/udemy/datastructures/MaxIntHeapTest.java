@@ -1,5 +1,6 @@
-package com.udemy.algorithms;
+package com.udemy.datastructures;
 
+import com.udemy.datastructures.MaxIntHeap;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.udemy.algorithms;
+package com.udemy.datastructures;
 
 /**
  * @author vsushko

@@ -1,16 +1,16 @@
-package com.udemy.algorithms;
+package com.udemy.datastructures;
 
 import java.util.Arrays;
 
 /**
  * @author vsushko
  */
-public class MinIntHeap {
+public class MaxIntHeap {
 
-    private int capacity = 10;
+    private int capactity = 10;
     private int size = 0;
 
-    public int[] items = new int[capacity];
+    public int[] items = new int[capactity];
 
     private int leftChildIndex(int parentIndex) {
         return 2 * parentIndex + 1;
@@ -49,23 +49,25 @@ public class MinIntHeap {
     }
 
     private void ensureCapacity() {
-        if (size == capacity) {
-            items = Arrays.copyOf(items, capacity * 2);
-            capacity *= 2;
+        if (size == capactity) {
+            items = Arrays.copyOf(items, capactity * 2);
+            capactity *= 2;
         }
     }
 
-    public int extractMin() {
+    public int extractMax() {
         if (size == 0) {
             throw new IllegalStateException();
         }
-        // grab the min
+
+        // grab the max
         int item = items[0];
-        // copy to the bottom
+        // swap top and bottom
         items[0] = items[size - 1];
         size--;
-        // heapify
+        // reorder
         heapifyDown();
+        // return max
         return item;
     }
 
@@ -80,8 +82,8 @@ public class MinIntHeap {
     public void heapifyUp() {
         // start at last element
         int index = size - 1;
-        // walk up as long as there is a parent and it is bigger than you
-        while (hasParent(index) && parent(index) > items[index]) {
+        // while my parents are less than me...
+        while (hasParent(index) && parent(index) < items[index]) {
             swap(parentIndex(index), index);
             // walk upwards to next node
             index = parentIndex(index);
@@ -93,12 +95,12 @@ public class MinIntHeap {
         int index = 0;
 
         // as long as I have children
-        // Note: only need to check left because if no left, there is no right
+        // note: only need to check left because if no left, there is no right
         while (hasLeftChild(index)) {
-            // pick a direction, and get the smaller of the two indexes
+
+            // take the larger of the two indexes
             int smallerChildIndex = leftChildIndex(index);
-            if (hasRightChild(index) && rightChild(index) < leftChild(index)) {
-                // swap right (because we are min heap
+            if (hasRightChild(index) && rightChild(index) > leftChild(index)) {
                 smallerChildIndex = rightChildIndex(index);
             }
 
@@ -106,12 +108,13 @@ public class MinIntHeap {
 
             // if I am smaller than the items of my two children...
             // then everything is good. I am sorted.
-            if (items[index] < items[smallerChildIndex]) {
+            if (items[index] > items[smallerChildIndex]) {
                 break;
             } else {
-                // we are still not in order
+                //  we are still not in order - swap
                 swap(index, smallerChildIndex);
             }
+
             // then move down to smaller child
             index = smallerChildIndex;
         }
