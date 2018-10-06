@@ -12,7 +12,7 @@ public class BubbleSort {
         System.out.println(Arrays.toString(sort(arr)));
     }
 
-    private static int[] sort(int[] arr) {
+    public static int[] sort(int[] arr) {
         int n = arr.length;
 
         for (int i = 0; i < n - 1; i++) {

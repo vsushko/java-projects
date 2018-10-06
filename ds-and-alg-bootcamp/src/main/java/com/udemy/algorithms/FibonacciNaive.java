@@ -9,7 +9,7 @@ public class FibonacciNaive {
         System.out.println(fib(1000));
     }
 
-    private static int fib(int n) {
+    public static int fib(int n) {
         System.out.println("n = " + n);
         if (n <= 0) {
             return 0;
