@@ -6,5 +6,4 @@ package com.udemy.diningphilosophers;
 public enum State {
     LEFT,
     RIGHT
-
 }
