@@ -16,7 +16,8 @@ public class GenericService {
     public Book fetchBookById(Integer id) {
         System.out.println("GenericService.foo");
 
-        final Book book = dao.fetchBookById(id);
+        final Book book1 = dao.fetchBookById(id);
+        final Book book = dao.fetchBookByTitle("foo");
         outLogger.logToOut(book.getTitle());
         errLogger.logToErr(book.getTitle());
         return book;

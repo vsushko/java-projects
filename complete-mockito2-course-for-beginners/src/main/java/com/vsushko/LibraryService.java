@@ -29,7 +29,7 @@ public class LibraryService {
 
         private int id;
 
-        final Book fetchBookById(Integer id) {
+        Book fetchBookById(Integer id) {
             System.out.println("DAO.fetchBookById");
             return DEFAULT_BOOK;
         }
