@@ -2,6 +2,7 @@ package com.vsushko;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,7 +40,6 @@ class LibraryServiceTest {
 
     @Test
     void testMethod() {
-        final LibraryService.DAO dao = mock(LibraryService.DAO.class);
         final LibraryService service = new LibraryService(dao);
 
         service.hasBookWithId(42);
@@ -49,7 +49,6 @@ class LibraryServiceTest {
 
     @Test
     void testMethodVerificationUsingLambdas() {
-        final LibraryService.DAO dao = mock(LibraryService.DAO.class);
         final LibraryService service = new LibraryService(dao);
 
         service.hasBookWithId(42);
@@ -115,6 +114,21 @@ class LibraryServiceTest {
         service.hasBookWithId(42);
 
         verify(service).hasBookWithId(argThat(isValid()));
+    }
+
+    @Test
+    void testArgumentCaptor() {
+        final LibraryService service = mock(LibraryService.class);
+
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+
+        service.hasBookWithId(42);
+
+        verify(service).hasBookWithId(captor.capture());
+
+        // when(service.hasBookWithId(captor.capture())).thenReturn(true);
+
+        assertThat(captor.getValue(), is(equalTo(42)));
     }
 
     private MyArgMatcher isValid() {
