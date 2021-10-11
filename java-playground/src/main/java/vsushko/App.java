@@ -1,21 +1,26 @@
 package vsushko;
 
+import java.util.Stack;
+
 /**
  * Hello world!
  */
 public class App {
 
     public static void main(String[] args) {
-        System.out.println(fib(6));
+        System.out.println(isValid("(((((()"));
     }
 
-    private static int fib(int number) {
-        if (number == 0) {
-            return 0;
+    private static boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+
+        for (char c : s.toCharArray()) {
+            if (c == '(') {
+                stack.push(')');
+            } else if (stack.isEmpty() || stack.pop() != c) {
+                return false;
+            }
         }
-        if (number == 1) {
-            return 1;
-        }
-        return fib(number - 1) + fib(number - 2);
+        return stack.isEmpty();
     }
 }

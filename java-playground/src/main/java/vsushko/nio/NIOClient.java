@@ -27,7 +27,7 @@ public class NIOClient {
         strings.add("signal");
 
         for (String s : strings) {
-            byte[] sBytes = new String(s).getBytes();
+            byte[] sBytes = s.getBytes();
             ByteBuffer buffer = ByteBuffer.wrap(sBytes);
             socketChannel.write(buffer);
 
