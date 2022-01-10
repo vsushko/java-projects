@@ -9,11 +9,12 @@ import org.springframework.stereotype.Component;
  * @author vsushko
  */
 @Component
-public class HelloWorldExecutionListener implements StepExecutionListener {
+public class HwStepExecutionListener implements StepExecutionListener {
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
         System.out.println("this is from beforee step execution" + stepExecution.getJobExecution().getExecutionContext());
+        System.out.println("In side Step - print job parameters: " + stepExecution.getJobExecution().getJobParameters());
     }
 
     @Override

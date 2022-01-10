@@ -1,5 +1,16 @@
-package com.vsushko.masterspringbatch.processor;/**
- * 
+package com.vsushko.masterspringbatch.processor;
+
+import org.springframework.batch.item.ItemProcessor;
+import org.springframework.stereotype.Component;
+
+/**
  * @author vsushko
- */public class InMemeItemProcessor {
+ */
+@Component
+public class InMemeItemProcessor implements ItemProcessor<Integer, Integer> {
+
+    @Override
+    public Integer process(Integer item) {
+        return Integer.sum(10, item);
+    }
 }
