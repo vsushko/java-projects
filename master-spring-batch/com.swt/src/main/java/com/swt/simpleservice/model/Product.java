@@ -1,4 +1,4 @@
-package com.vsushko.masterspringbatch.model;
+package com.swt.simpleservice.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
@@ -13,6 +13,14 @@ public class Product {
     private String productDesc;
     private BigDecimal price;
     private Integer unit;
+
+    public Product(Integer productId, String productName, String productDesc, BigDecimal price, Integer unit) {
+        this.productId = productId;
+        this.productName = productName;
+        this.productDesc = productDesc;
+        this.price = price;
+        this.unit = unit;
+    }
 
     public Integer getProductId() {
         return productId;
