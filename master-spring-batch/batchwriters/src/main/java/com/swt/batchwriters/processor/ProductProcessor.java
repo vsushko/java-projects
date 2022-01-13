@@ -10,11 +10,12 @@ public class ProductProcessor implements ItemProcessor<Product, Product> {
 
     @Override
     public Product process(Product product) throws Exception {
-        if (product.getProductId() == 2) {
-            return null;
-        } else {
+        Thread.sleep(300);
+//        if (product.getProductId() == 2) {
+//            return null;
+//        } else {
             product.setProductDesc(product.getProductDesc().toUpperCase());
-        }
-        return null;
+//        }
+        return product;
     }
 }

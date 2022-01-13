@@ -12,10 +12,10 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
-import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
@@ -28,16 +28,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author vsushko
@@ -54,6 +53,17 @@ public class BatchConfig {
 
     @Autowired
     private DataSource dataSource;
+
+//    @Autowired
+//    private ProductServiceAdapter adapter;
+//
+//    @Bean
+//    public ItemReaderAdapter serviceAdapter() {
+//        ItemReaderAdapter readerAdapter = new ItemReaderAdapter();
+//        readerAdapter.setTargetObject(adapter);
+//        readerAdapter.setTargetMethod("nextProduct");
+//        return readerAdapter;
+//    }
 
     @StepScope
     @Bean
@@ -82,7 +92,20 @@ public class BatchConfig {
     @StepScope
     @Bean
     public FlatFileItemWriter flatFileItemWriter(@Value("#{jobParameters['fileOutput']}") FileSystemResource outputFile) {
-        FlatFileItemWriter writer = new FlatFileItemWriter();
+        FlatFileItemWriter writer = new FlatFileItemWriter<Product>();
+
+//        FlatFileItemWriter writer = new FlatFileItemWriter<Product>() {
+//            @Override
+//            public String doWrite(List<? extends Product> items) {
+//                for (Product p : items) {
+//                    if (p.getProductId() == 9) {
+//                        throw new RuntimeException("Beacause ID is 9");
+//                    }
+//                }
+//                return super.doWrite(items);
+//            }
+//        };
+
         writer.setResource(outputFile);
         writer.setLineAggregator(new DelimitedLineAggregator() {
             {
@@ -160,9 +183,18 @@ public class BatchConfig {
     public Step step1() {
         return steps.get("step1")
                 .<Product, Product>chunk(3)
+//                .reader(serviceAdapter())
                 .reader(reader(null))
                 .processor(new ProductProcessor())
                 .writer(flatFileItemWriter(null))
+                .faultTolerant()
+                .skip(FlatFileParseException.class)
+                .skipLimit(3)
+                // skip  policy
+//                .retry(ResourceAccessException.class)
+//                .retryLimit(5)
+//                .skipPolicy(new AlwaysSkipItemSkipPolicy())
+//                .listener(new ProductSkipListener())
 //                .writer(xmlWriter(null))
 //                .writer(dbWriter())
 //                .writer(dbWriter2())
@@ -170,10 +202,50 @@ public class BatchConfig {
     }
 
     @Bean
+    public Step multiThreadStep() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(4);
+        taskExecutor.setMaxPoolSize(4);
+        taskExecutor.afterPropertiesSet();
+
+
+
+
+        return steps.get("step1")
+                .<Product, Product>chunk(3)
+//                .reader(serviceAdapter())
+                .reader(reader(null))
+                .processor(new ProductProcessor())
+                .writer(flatFileItemWriter(null))
+                .taskExecutor(taskExecutor)
+//                .faultTolerant()
+//                .skip(FlatFileParseException.class)
+//                .skipLimit(3)
+                // skip  policy
+//                .retry(ResourceAccessException.class)
+//                .retryLimit(5)
+//                .skipPolicy(new AlwaysSkipItemSkipPolicy())
+//                .listener(new ProductSkipListener())
+//                .writer(xmlWriter(null))
+//                .writer(dbWriter())
+//                .writer(dbWriter2())
+                .build();
+    }
+
+    @Bean
+    public Step step0() {
+        return steps.get("step0")
+                .tasklet(new ConsoleTasklet())
+                .build();
+    }
+
+    @Bean
     public Job job1() {
         return jobs.get("job1")
                 .incrementer(new RunIdIncrementer())
-                .start(step1())
+                .start(step0())
+//                .next(step1())
+                .next(multiThreadStep())
                 .build();
     }
 }
