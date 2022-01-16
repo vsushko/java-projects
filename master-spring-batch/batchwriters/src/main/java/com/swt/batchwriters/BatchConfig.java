@@ -3,7 +3,12 @@ package com.swt.batchwriters;
 import com.swt.batchwriters.model.Product;
 import com.swt.batchwriters.processor.ProductProcessor;
 import com.swt.batchwriters.reader.ColumnRangePartitioner;
+import com.swt.batchwriters.tasklet.BizTasklet3;
+import com.swt.batchwriters.tasklet.BizTasklet4;
+import com.swt.batchwriters.tasklet.CleanupTasklet;
 import com.swt.batchwriters.tasklet.ConsoleTasklet;
+import com.swt.batchwriters.tasklet.DownloadTasklet;
+import com.swt.batchwriters.tasklet.FileProcessTasklet;
 import com.swt.batchwriters.tasklet.PagerDutyTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -304,7 +309,73 @@ public class BatchConfig {
 
 
 
+    @Bean
+    public Step downloadStep() {
+        return steps.get("downloadStep")
+                .tasklet(new DownloadTasklet())
+                .build();
+    }
 
+    @Bean
+    public Step fileProcessStep() {
+        return steps.get("fileProcessStep")
+                .tasklet(new FileProcessTasklet())
+                .build();
+    }
+
+    @Bean
+    public Step bizTasklet3Step() {
+        return steps.get("bizTasklet3Step")
+                .tasklet(new BizTasklet3())
+                .build();
+    }
+
+    @Bean
+    public Step bizTasklet4Step() {
+        return steps.get("bizTasklet4Step")
+                .tasklet(new BizTasklet4())
+                .build();
+    }
+
+    @Bean
+    public Step cleanupStep() {
+        return steps.get("cleanupStep")
+                .tasklet(new CleanupTasklet())
+                .build();
+    }
+
+    public Step pagedDutyStep() {
+        return steps.get("pagerrdutyStep")
+                .tasklet(new PagerDutyTasklet())
+                .build();
+    }
+
+    @Bean
+    public Flow fileFlow() {
+        return new FlowBuilder<SimpleFlow>("fileFlow")
+                .start(downloadStep())
+                .next(fileProcessStep())
+                .build();
+    }
+
+    @Bean
+    public Flow bizFlow1() {
+        return new FlowBuilder<SimpleFlow>("bizFlow1")
+                .start(bizTasklet3Step())
+                .next(fileProcessStep())
+                .build();
+    }
+
+    @Bean
+    public Flow bizFlow2() {
+        return new FlowBuilder<SimpleFlow>("bizFlow2")
+                .start(bizTasklet4Step())
+//                .next(fileProcessStep())
+                .from(bizTasklet4Step()).on("*").end()
+                .on("FAILED")
+                .to(pagedDutyStep())
+                .build();
+    }
     public Flow splitFlow() {
         return new FlowBuilder<SimpleFlow>("splitFlow")
                 .split(new SimpleAsyncTaskExecutor())
