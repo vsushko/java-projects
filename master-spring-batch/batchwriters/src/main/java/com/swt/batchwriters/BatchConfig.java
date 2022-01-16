@@ -2,16 +2,27 @@ package com.swt.batchwriters;
 
 import com.swt.batchwriters.model.Product;
 import com.swt.batchwriters.processor.ProductProcessor;
+import com.swt.batchwriters.reader.ColumnRangePartitioner;
+import com.swt.batchwriters.tasklet.ConsoleTasklet;
+import com.swt.batchwriters.tasklet.PagerDutyTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.job.builder.FlowBuilder;
+import org.springframework.batch.core.job.flow.Flow;
+import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.integration.async.AsyncItemProcessor;
+import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.database.support.MySqlPagingQueryProvider;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -27,6 +38,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -36,7 +49,7 @@ import java.io.Writer;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.Map;
 
 /**
  * @author vsushko
@@ -53,6 +66,9 @@ public class BatchConfig {
 
     @Autowired
     private DataSource dataSource;
+
+    @Autowired
+    private Flow fileFlow;
 
 //    @Autowired
 //    private ProductServiceAdapter adapter;
@@ -208,9 +224,6 @@ public class BatchConfig {
         taskExecutor.setMaxPoolSize(4);
         taskExecutor.afterPropertiesSet();
 
-
-
-
         return steps.get("step1")
                 .<Product, Product>chunk(3)
 //                .reader(serviceAdapter())
@@ -233,19 +246,143 @@ public class BatchConfig {
     }
 
     @Bean
+    public AsyncItemProcessor asyncItemProcessor() {
+        AsyncItemProcessor processor = new AsyncItemProcessor();
+        processor.setDelegate(new ProductProcessor());
+        processor.setTaskExecutor(new SimpleAsyncTaskExecutor());
+        return processor;
+    }
+
+    @Bean
+    public AsyncItemWriter asyncItemWriter() {
+        AsyncItemWriter writer = new AsyncItemWriter();
+        writer.setDelegate(flatFileItemWriter(null));
+        return writer;
+    }
+
+    @Bean
+    public Step async_step() {
+
+        return steps.get("async_step")
+                .<Product, Product>chunk(5)
+                .reader(reader(null))
+                //.reader(serviceAdapter())
+                .processor(asyncItemProcessor())
+                //.writer(flatFileItemWriter(null))
+                .writer(asyncItemWriter())
+                //  .writer(xmlWriter(null))
+                //.writer(dbWriter())
+                //   .writer(dbWriter2())
+                //.faultTolerant()
+                // .retry(FlatFileParseException.class)
+                // .retryLimit(5)
+                //.skip(FlatFileParseException.class)
+                //.skipLimit(3)
+                //Skippolicy
+                //.skipPolicy(new AlwaysSkipItemSkipPolicy())
+                // .listener(new ProductSkipListener())
+                .build();
+    }
+
+    @Bean
     public Step step0() {
         return steps.get("step0")
                 .tasklet(new ConsoleTasklet())
                 .build();
     }
 
+//
+//    @Bean
+//    public Job job1() {
+//        return jobs.get("job1")
+//                .incrementer(new RunIdIncrementer())
+//                .start(step0())
+////                .next(step1())
+//                .next(multiThreadStep())
+//                .build();
+//    }
+
+
+
+
+    public Flow splitFlow() {
+        return new FlowBuilder<SimpleFlow>("splitFlow")
+                .split(new SimpleAsyncTaskExecutor())
+                .add(fileFlow(), bizFlow1(), bizFlow2())
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public JdbcPagingItemReader pagingItemReader(
+            @Value("#{stepExecutionContext['minValue']}") Long minValue,
+            @Value("#{stepExecutionContext['maxValue']}") Long maxValue
+    ) {
+        System.out.println("From " + minValue + "to " + maxValue);
+        Map<String, Order> sortKey = new HashMap<>();
+        sortKey.put("product_id", Order.ASCENDING);
+
+        MySqlPagingQueryProvider queryProvider = new MySqlPagingQueryProvider();
+        queryProvider.setSelectClause("product_id, prod_name, prod_desc, unit, price");
+        queryProvider.setFromClause("from products");
+        queryProvider.setWhereClause("where product_id >=" + minValue + " and product_id <" + maxValue);
+        queryProvider.setSortKeys(sortKey);
+
+        JdbcPagingItemReader reader = new JdbcPagingItemReader();
+        reader.setDataSource(this.dataSource);
+        reader.setQueryProvider(queryProvider);
+        reader.setFetchSize(1000);
+
+        reader.setRowMapper(new BeanPropertyRowMapper() {
+            {
+                setMappedClass(Product.class);
+            }
+        });
+
+        return reader;
+    }
+
+    public ColumnRangePartitioner columnRangePartitioner() {
+        ColumnRangePartitioner columnRangePartitioner = new ColumnRangePartitioner();
+        columnRangePartitioner.setColumn("product_id");
+        columnRangePartitioner.setDataSource(dataSource);
+        columnRangePartitioner.setTable("products");
+        return columnRangePartitioner;
+    }
+
+    public Step slaveStep() {
+        return steps.get("slaveStep")
+                .<Product, Product>chunk(5)
+                .reader(pagingItemReader(null, null))
+                .writer(new ConsoleItemWriter())
+                .build();
+    }
+
+    public Step partitionStep() {
+
+        return steps.get("partitionStep")
+                .partitioner(slaveStep().getName(), columnRangePartitioner())
+                .step(slaveStep())
+                .gridSize(3)
+                .taskExecutor(new SimpleAsyncTaskExecutor())
+                .build();
+    }
+//
+//    @Bean
+//    public Job job1() {
+//        return jobs.get("job1")
+//                .incrementer(new RunIdIncrementer())
+//                .start(splitFlow())
+//                .next(cleanupStep())
+//                .end()
+//                .build();
+//    }
+
     @Bean
     public Job job1() {
         return jobs.get("job1")
                 .incrementer(new RunIdIncrementer())
-                .start(step0())
-//                .next(step1())
-                .next(multiThreadStep())
+                .start(partitionStep())
                 .build();
     }
 }
