@@ -27,9 +27,7 @@ class ParallelStreamsExampleTest {
         timeTaken();
 
         assertEquals(4, resultList.size());
-        resultList.forEach(name -> {
-            assertTrue(name.contains("-"));
-        });
+        resultList.forEach(name -> assertTrue(name.contains("-")));
     }
 
     @ParameterizedTest
