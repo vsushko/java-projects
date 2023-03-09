@@ -41,19 +41,25 @@ public class CheckoutService {
             log("Checkout Error");
             return new CheckoutResponse(CheckoutStatus.FAILURE, priceValidationList);
         }
-
         //double finalRate = calculateFinalPrice(cart);
-        //double finalRate = calculateFinalPrice_reduce(cart);
-        //log("Checkout Complete and the final rate is " + finalRate);
+        double finalRate = calculateFinalPrice_reduce(cart);
+        log("Checkout Complete and the final rate is " + finalRate);
 
-        return new CheckoutResponse(CheckoutStatus.SUCCESS);
+        return new CheckoutResponse(CheckoutStatus.SUCCESS, finalRate);
     }
 
-//    private double calculateFinalPrice(Cart cart) {
-//
-//    }
-//
-//    private double calculateFinalPrice_reduce(Cart cart) {
-//
-//    }
+    private double calculateFinalPrice(Cart cart) {
+        return cart.getCartItemList()
+                .parallelStream()
+                .map(cartItem -> cartItem.getQuantity() * cartItem.getRate())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+    }
+
+    private double calculateFinalPrice_reduce(Cart cart) {
+        return cart.getCartItemList()
+                .parallelStream()
+                .map(cartItem -> cartItem.getQuantity() * cartItem.getRate())
+                .reduce(0.0, Double::sum);
+    }
 }
