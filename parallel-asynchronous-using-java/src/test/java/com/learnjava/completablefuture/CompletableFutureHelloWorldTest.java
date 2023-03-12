@@ -50,54 +50,37 @@ class CompletableFutureHelloWorldTest {
         //then
         assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
     }
-//
-//    @Test
-//    void helloWorld_3_async_calls_log_async() {
-//
-//        //given
-//        //when
-//        String hw = cfhw.helloWorld_3_async_calls_log_async();
-//
-//        //then
-//        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
-//
-//    }
-//
 
-//    @Test
-//    void helloWorld_3_async_calls_custom_threadPool() {
-//
-//        //given
-//        //when
-//        String hw = cfhw.helloWorld_3_async_calls_custom_threadPool();
-//
-//        //then
-//        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
-//
-//    }
-//
-//    @Test
-//    void helloWorld_3_async_calls_custom_threadpool_async() {
-//
-//        //given
-//        //when
-//        String hw = cfhw.helloWorld_3_async_calls_custom_threadpool_async();
-//
-//        //then
-//        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
-//
-//    }
+    @Test
+    void helloWorld_3_async_calls_log_async() {
+        //when
+        String hw = cfhw.helloWorld_3_async_calls_log_async();
+        //then
+        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
+    }
+
+    @Test
+    void helloWorld_3_async_calls_custom_threadPool() {
+        //when
+        String hw = cfhw.helloWorld_3_async_calls_custom_threadPool();
+        //then
+        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
+    }
+
+    @Test
+    void helloWorld_3_async_calls_custom_threadpool_async() {
+        //when
+        String hw = cfhw.helloWorld_3_async_calls_custom_threadpool_async();
+        //then
+        assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE!", hw);
+    }
 
     @Test
     void helloWorld_4_async_calls() {
-
-        //given
         //when
         String hw = cfhw.helloWorld_4_async_calls();
-
         //then
         assertEquals("HELLO WORLD! HI COMPLETABLEFUTURE! BYE!", hw);
-
     }
 
     @Test
@@ -135,14 +118,10 @@ class CompletableFutureHelloWorldTest {
 //                })
 //                .join();
 //        timeTaken();
-//
-//
 //    }
 //
 //    @Test
 //    void helloWorld_withSize() {
-//
-//        //given
 //        //when
 //        CompletableFuture<String> completableFuture = cfhw.helloWorld_withSize();
 //
@@ -156,9 +135,6 @@ class CompletableFutureHelloWorldTest {
 //
 //    @Test
 //    void allOf() {
-//
-//        //given
-//
 //        //when
 //        String result = cfhw.allOf();
 //
@@ -168,9 +144,6 @@ class CompletableFutureHelloWorldTest {
 //
 //    @Test
 //    void anyOf() {
-//
-//        //given
-//
 //        //when
 //        String result = cfhw.anyOf();
 //
