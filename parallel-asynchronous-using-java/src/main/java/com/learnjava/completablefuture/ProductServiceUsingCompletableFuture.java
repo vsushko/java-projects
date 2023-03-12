@@ -69,6 +69,8 @@ public class ProductServiceUsingCompletableFuture {
     }
 
     public Product retrieveProductDetailsWithInventory_approach2(String productId) {
+        stopWatch.start();
+
         CompletableFuture<ProductInfo> piFuture =
                 CompletableFuture.supplyAsync(() -> productInfoService.retrieveProductInfo(productId))
                         .thenApply(productInfo -> {
@@ -76,10 +78,19 @@ public class ProductServiceUsingCompletableFuture {
                             return productInfo;
                         });
         CompletableFuture<Review> rFuture =
-                CompletableFuture.supplyAsync(() -> reviewService.retrieveReviews(productId));
+                CompletableFuture.supplyAsync(() -> reviewService.retrieveReviews(productId))
+                        .exceptionally((e) -> {
+                            log("Handled the Exception in reviewService: " + e.getMessage());
+                            return Review.builder()
+                                    .noOfReviews(0).overallRating(0.0)
+                                    .build();
+                        });
 
         Product product = piFuture
                 .thenCombine(rFuture, (productInfo, review) -> new Product(productId, productInfo, review))
+                .whenComplete((product1, ex) -> {
+                    log("Inside WhenComplete: " + product1 + " and the exception is " + ex);
+                })
                 .join(); // block the thread
 
         stopWatch.stop();
