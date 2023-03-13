@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,5 +21,4 @@ public class GitHubPosition {
     private String description;
     private String how_to_apply;
     private String company_logo;
-
 }

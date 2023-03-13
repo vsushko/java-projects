@@ -1,6 +1,5 @@
 package com.learnjava.util;
 
-
 import com.learnjava.domain.checkout.Cart;
 import com.learnjava.domain.checkout.CartItem;
 
@@ -31,7 +30,6 @@ public class DataSet {
 
     public static List<String> namesList() {
         return List.of("Bob", "Jamie", "Jill", "Rick");
-
     }
 
     public static List<Integer> generateIntegerList(int maxNumber) {
@@ -60,8 +58,6 @@ public class DataSet {
         return IntStream.rangeClosed(1, maxNumber)
                 .boxed().collect(Collectors.toSet());
     }
-
-
 
     public static double generateRandomPrice() {
         int min = 50;

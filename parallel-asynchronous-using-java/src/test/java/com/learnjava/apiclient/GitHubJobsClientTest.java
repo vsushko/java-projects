@@ -1,15 +1,6 @@
 package com.learnjava.apiclient;
 
-import com.learnjava.domain.github.GitHubPosition;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 @Disabled
 class GitHubJobsClientTest {

@@ -100,54 +100,11 @@ class CompletableFutureHelloWorldTest {
         timeTaken();
     }
 
-//    @Test
-//    @Disabled
-//    void helloWorld_complete() {
-//
-//        //given
-//        //when
-//        startTimer();
-//
-//        CompletableFuture<String> completableFuture = cfhw.complete("hello world!");
-//
-//        //then
-//        completableFuture
-//                .thenAccept(s -> {
-//                    //assertEquals("hello world", s);
-//                    assertEquals("12 - HELLO WORLD!", s);
-//                })
-//                .join();
-//        timeTaken();
-//    }
-//
-//    @Test
-//    void helloWorld_withSize() {
-//        //when
-//        CompletableFuture<String> completableFuture = cfhw.helloWorld_withSize();
-//
-//        //then
-//        completableFuture
-//                .thenAccept(s -> {
-//                    assertEquals("11 - HELLO WORLD", s);
-//                })
-//                .join();
-//    }
-//
-//    @Test
-//    void allOf() {
-//        //when
-//        String result = cfhw.allOf();
-//
-//        //then
-//        assertEquals("Hello World", result);
-//    }
-//
-//    @Test
-//    void anyOf() {
-//        //when
-//        String result = cfhw.anyOf();
-//
-//        //then
-//        assertEquals("Hello World", result);
-//    }
+    @Test
+    void anyOf() {
+        //when
+        String result = cfhw.anyOf();
+        //then
+        assertEquals("hello world", result);
+    }
 }

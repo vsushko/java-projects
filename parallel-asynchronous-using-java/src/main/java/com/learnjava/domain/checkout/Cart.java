@@ -15,5 +15,4 @@ public class Cart {
 
     private Integer cardId;
     private List<CartItem> cartItemList;
-
 }
