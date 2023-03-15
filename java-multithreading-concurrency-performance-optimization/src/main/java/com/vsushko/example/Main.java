@@ -1,4 +1,4 @@
-package com.vsushko;
+package com.vsushko.example;
 
 /**
  * Hello world!
@@ -23,10 +23,21 @@ public class Main {
             }
         });
 
-        System.out.println("We are in thread: " + Thread.currentThread().getName() + " before starting a new thread");
+        System.out.println("We are in newThread: " + Thread.currentThread().getName() + " before starting a new thread");
         thread.start();
-        System.out.println("We are in thread: " + Thread.currentThread().getName() + " after starting a new thread");
+        System.out.println("We are in newThread: " + Thread.currentThread().getName() + " after starting a new thread");
+
+        Thread newThread = new NewThread();
+        newThread.start();
 
         Thread.sleep(10000);
+    }
+
+    private static class NewThread extends Thread {
+        @Override
+        public void run() {
+            System.out.println("We are now in thread " + Thread.currentThread().getName());
+            System.out.println("Current thread priority is " + Thread.currentThread().getPriority());
+        }
     }
 }
