@@ -2,6 +2,7 @@ package com.springbank.user.core.configuration;
 
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
+import com.thoughtworks.xstream.XStream;
 import org.axonframework.eventhandling.tokenstore.TokenStore;
 import org.axonframework.eventsourcing.eventstore.EmbeddedEventStore;
 import org.axonframework.eventsourcing.eventstore.EventStorageEngine;
@@ -14,6 +15,7 @@ import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoSettings
 import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore;
 import org.axonframework.serialization.Serializer;
 import org.axonframework.spring.config.AxonConfiguration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +27,7 @@ import java.util.Collections;
  */
 @Configuration
 public class AxonConfig {
-    @Value("${spring.data.mongodb.host:127.0.0.1}")
+    @Value("${spring.data.mongodb.host:192.168.0.1}")
     private String mongoHost;
 
     @Value("${spring.data.mongodb.port:27017}")
@@ -75,4 +77,16 @@ public class AxonConfig {
                 .messageMonitor(configuration.messageMonitor(EventStore.class, "eventStore"))
                 .build();
     }
+
+//    @Bean
+//    @Qualifier("defaultAxonXStream")
+//    public XStream xStream() {
+//        XStream xStream = new XStream();
+//
+//        xStream.allowTypesByWildcard(new String[]{
+//                "java.util.**",
+//                "tech.gklijs.tech.**"
+//        });
+//        return xStream;
+//    }
 }
