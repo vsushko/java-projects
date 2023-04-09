@@ -31,10 +31,6 @@ public class UserEventHandlerImpl implements UserEventHandler {
     @Override
     public void on(UserRegisteredEvent event) {
         userRepository.save(event.getUser());
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-        Date date = new Date();
-        System.out.println(dateFormat.format(date));
     }
 
     @EventHandler

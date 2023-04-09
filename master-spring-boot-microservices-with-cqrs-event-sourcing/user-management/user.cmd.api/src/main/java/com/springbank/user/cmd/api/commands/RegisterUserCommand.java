@@ -17,7 +17,7 @@ public class RegisterUserCommand {
     @TargetAggregateIdentifier
     private String id;
 
-    @NotNull(message = "no user details were supplied")
     @Valid
+    @NotNull(message = "no user details were supplied")
     private User user;
 }
