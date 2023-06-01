@@ -9,7 +9,6 @@ public class FluxAndMonoGeneratorService {
 
     public static void main(String[] args) {
         FluxAndMonoGeneratorService service = new FluxAndMonoGeneratorService();
-
         service.namesFlux().subscribe(name -> System.out.println("Name is " + name));
         service.nameMono().subscribe(name -> System.out.println("Name is " + name));
     }
