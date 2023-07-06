@@ -20,4 +20,23 @@ public class FluxAndMonoGeneratorService {
     public Mono<String> nameMono() {
         return Mono.just("alex");
     }
+
+    public Flux<String> namesFluxMap() {
+        return Flux.fromIterable(List.of("alex", "ben", "chloe"))
+                .map(String::toUpperCase);
+    }
+
+    public Flux<String> namesFluxImmutability() {
+        var namesFlux = Flux.fromIterable(List.of("alex", "ben", "chloe"));
+        namesFlux.map(String::toUpperCase);
+        return namesFlux;
+    }
+
+    public Flux<String> namesFluxMap(int stringLength) {
+        return Flux.fromIterable(List.of("alex", "ben", "chloe"))
+                .map(String::toUpperCase)
+                .filter(s -> s.length() > stringLength)
+                .map(s -> s.length() + "-" + s)
+                .log();
+    }
 }
