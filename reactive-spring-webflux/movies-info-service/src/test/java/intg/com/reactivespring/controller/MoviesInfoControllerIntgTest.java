@@ -98,6 +98,18 @@ class MoviesInfoControllerIntgTest {
     }
 
     @Test
+    void getMovieInfoByIdNotFound() {
+        var movieInfoId = "def";
+
+        webTestClient
+                .get()
+                .uri(MOVIES_INFO_URL + "/{id}", movieInfoId)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
     void updateMovieInfo() {
         var movieInfoId = "abc";
         var movieInfo = new MovieInfo(null, "Dark Knight Back", 2005, List.of("Christian Bale", "Tom Hardy"), LocalDate.parse("2012-07-20"));
@@ -126,5 +138,18 @@ class MoviesInfoControllerIntgTest {
                 .exchange()
                 .expectStatus()
                 .isNoContent();
+    }
+
+    @Test
+    void updateMovieInfoNotFound() {
+        var movieInfoId = "def";
+        var movieInfo = new MovieInfo(null, "Dark Knight Back", 2005, List.of("Christian Bale", "Tom Hardy"), LocalDate.parse("2012-07-20"));
+        webTestClient
+                .put()
+                .uri(MOVIES_INFO_URL + "/{id}", movieInfoId)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
     }
 }
