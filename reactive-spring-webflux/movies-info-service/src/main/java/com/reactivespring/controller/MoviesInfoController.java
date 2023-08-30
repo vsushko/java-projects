@@ -2,6 +2,7 @@ package com.reactivespring.controller;
 
 import com.reactivespring.service.MoviesInfoService;
 import domain.MovieInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -21,6 +23,7 @@ import javax.validation.Valid;
 /**
  * @author vsushko
  */
+@Slf4j
 @RestController
 @RequestMapping("/v1")
 public class MoviesInfoController {
@@ -38,7 +41,15 @@ public class MoviesInfoController {
     }
 
     @GetMapping("/movieinfos")
-    public Flux<MovieInfo> getAllMovieInfos() {
+    public Flux<MovieInfo> getAllMovieInfos(@RequestParam(value = "year", required = false) Integer year, @RequestParam(value = "name", required = false) String name) {
+        if (year != null) {
+            log.info("Year is " + year);
+            return moviesInfoService.getMovieInfoByYear(year);
+        }
+        if (name != null) {
+            log.info("Name is " + name);
+            return moviesInfoService.getMovieInfoByName(name);
+        }
         return moviesInfoService.getAllMovieInfos().log();
     }
 
