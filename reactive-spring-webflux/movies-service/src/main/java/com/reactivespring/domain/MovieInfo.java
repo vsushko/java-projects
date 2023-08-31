@@ -1,6 +1,5 @@
 package com.reactivespring.domain;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +17,16 @@ import java.util.List;
 @Validated
 public class MovieInfo {
     private String movieInfoId;
+
     @NotBlank(message = "movieInfo.name must be present")
     private String name;
+
     @NotNull
     @Positive(message = "movieInfo.year must be a Positive Value")
     private Integer year;
 
     @NotNull
     private List<@NotBlank(message = "movieInfo.cast must be present") String> cast;
+
     private LocalDate release_date;
 }
