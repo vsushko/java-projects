@@ -78,6 +78,40 @@ class MoviesInfoControllerIntgTest {
     }
 
     @Test
+    void getAllMovieInfosStream() {
+        var movieInfo = new MovieInfo("abc", "Dark Knight Move", 2005, List.of("Christian Bale", "Tom Hardy"), LocalDate.parse("2012-07-20"));
+        webTestClient
+                .post()
+                .uri(MOVIES_INFO_URL)
+                .bodyValue(movieInfo)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody(MovieInfo.class)
+                .consumeWith(movieInfoEntityExchangeResult -> {
+                    var savedMovieInfo = movieInfoEntityExchangeResult.getResponseBody();
+                    assert savedMovieInfo != null;
+                    assert savedMovieInfo.getMovieInfoId() != null;
+                });
+
+        var moviesStreamFlux = webTestClient
+                .get()
+                .uri(MOVIES_INFO_URL + "/stream")
+                .exchange()
+                .expectStatus()
+                .is2xxSuccessful()
+                .returnResult(MovieInfo.class)
+                .getResponseBody();
+
+        StepVerifier.create(moviesStreamFlux)
+                .assertNext(movieInfo1 -> {
+                    assert movieInfo1.getMovieInfoId() != null;
+                })
+                .thenCancel()
+                .verify();
+    }
+
+    @Test
     void getAllMovieInfos() {
         webTestClient
                 .get()

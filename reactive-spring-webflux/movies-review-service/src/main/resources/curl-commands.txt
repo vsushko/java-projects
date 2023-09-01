@@ -26,6 +26,7 @@ curl -i http://localhost:8081/v1/reviews?movieInfoId=1
 
 curl -i http://localhost:8081/v1/reviews?movieInfoId=2
 
+curl -i http://localhost:8081/v1/reviews/stream
 
 UPDATE-REVIEW:
 ----------------
