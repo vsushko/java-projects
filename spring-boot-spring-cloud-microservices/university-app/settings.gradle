@@ -1,0 +1,5 @@
+rootProject.name = 'university-app'
+
+include 'address-service'
+include 'student-service'
+include 'eureka-server'
