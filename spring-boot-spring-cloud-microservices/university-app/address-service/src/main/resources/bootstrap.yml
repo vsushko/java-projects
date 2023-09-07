@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: address-service
+
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config-server
+      profile: dev
+
+management:
+  endpoint:
+    refresh:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: refresh

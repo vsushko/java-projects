@@ -39,7 +39,7 @@ public class MoviesController {
     }
 
     @GetMapping(value = "/stream", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    public Flux<MovieInfo> retrieveMovieInfos(){
+    public Flux<MovieInfo> retrieveMovieInfos() {
         return moviesInfoRestClient.retrieveMovieInfoStream();
     }
 }

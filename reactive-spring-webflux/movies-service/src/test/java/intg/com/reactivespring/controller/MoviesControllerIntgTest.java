@@ -84,7 +84,8 @@ public class MoviesControllerIntgTest {
                 .expectStatus()
                 .isOk();
 
-         WireMock.verify(1, getRequestedFor(urlEqualTo("/v1/movieinfos/" + movieId)));;
+        WireMock.verify(1, getRequestedFor(urlEqualTo("/v1/movieinfos/" + movieId)));
+        ;
     }
 
     @Test
@@ -154,7 +155,6 @@ public class MoviesControllerIntgTest {
 
 //        WireMock.verify(4, getRequestedFor(urlPathMatching("/v1/reviews*")));
     }
-
 
     @Test
     void retrieveMovieById_reviews_5XXWithRetry() {

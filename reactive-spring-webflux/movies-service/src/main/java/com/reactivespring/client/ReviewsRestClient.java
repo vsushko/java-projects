@@ -56,6 +56,5 @@ public class ReviewsRestClient {
                 })
                 .bodyToFlux(Review.class)
                 .retryWhen(RetryUtil.retrySpec());
-
     }
 }
