@@ -39,11 +39,21 @@ dependencies {
     implementation 'com.mysql:mysql-connector-j:8.1.0'
     runtimeOnly 'com.mysql:mysql-connector-j:8.1.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // junit
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
+    // zipkin
     implementation 'org.springframework.cloud:spring-cloud-starter-sleuth:2.2.6.RELEASE'
     implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin:2.2.6.RELEASE'
+
+    // config
+    implementation 'org.springframework.cloud:spring-cloud-config-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+
+    // actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator:3.1.3'
 }
 
 ext {
