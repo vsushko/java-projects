@@ -1,5 +1,6 @@
 package net.javaguides.springbootrestfulwebservices.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import net.javaguides.springbootrestfulwebservices.dto.UserDto;
 import net.javaguides.springbootrestfulwebservices.service.UserService;
@@ -27,7 +28,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto savedUser = userService.createUser(userDto);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
@@ -47,7 +48,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long userId, @RequestBody UserDto user) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long userId, @Valid @RequestBody UserDto user) {
         user.setId(userId);
         UserDto updatedUser = userService.updateUser(user);
 
