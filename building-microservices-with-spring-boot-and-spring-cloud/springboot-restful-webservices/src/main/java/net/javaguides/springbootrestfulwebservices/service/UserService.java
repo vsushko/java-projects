@@ -1,6 +1,6 @@
 package net.javaguides.springbootrestfulwebservices.service;
 
-import net.javaguides.springbootrestfulwebservices.entity.User;
+import net.javaguides.springbootrestfulwebservices.dto.UserDto;
 
 import java.util.List;
 
@@ -9,13 +9,13 @@ import java.util.List;
  */
 public interface UserService {
 
-    User createUser(User user);
+    UserDto createUser(UserDto userDto);
 
-    User getUserById(Long id);
+    UserDto getUserById(Long id);
 
-    List<User> getAllUsers();
+    List<UserDto> getAllUsers();
 
-    User updateUser(User user);
+    UserDto updateUser(UserDto user);
 
     void deleteUser(Long userId);
 }
