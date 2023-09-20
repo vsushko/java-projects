@@ -14,7 +14,7 @@
     <name>bankacc.query.api</name>
     <description>Bank Account Query API Project</description>
     <properties>
-        <java.version>15</java.version>
+        <java.version>17</java.version>
     </properties>
     <dependencies>
         <dependency>
