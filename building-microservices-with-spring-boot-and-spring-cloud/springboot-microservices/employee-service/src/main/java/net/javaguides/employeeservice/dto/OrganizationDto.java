@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 /**
  * @author vsushko
  */
@@ -14,13 +16,15 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepartmentDto {
+public class OrganizationDto {
 
     private Long id;
 
-    private String departmentName;
+    private String organizationName;
 
-    private String departmentDescription;
+    private String organizationDescription;
 
-    private String departmentCode;
+    private String organizationCode;
+
+    private LocalDateTime createdDate;
 }
