@@ -1,4 +1,4 @@
-package net.javaguides.springbootkafkatutorial;
+package net.javaguides.springbootkafkatutorial.controller;
 
 import lombok.AllArgsConstructor;
 import net.javaguides.springbootkafkatutorial.kafka.KafkaProducer;
