@@ -23,7 +23,7 @@ public class IoBoundApplication {
     }
 
     private static void performTasks() {
-        ExecutorService executorService = Executors.newFixedThreadPool(1000);
+        ExecutorService executorService = Executors.newVirtualThreadPerTaskExecutor();
 
         for (int i = 0; i < NUMBER_OF_TASKS; i++) {
             executorService.submit(() -> {
