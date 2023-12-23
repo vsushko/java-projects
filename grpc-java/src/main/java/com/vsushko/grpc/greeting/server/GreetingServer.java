@@ -14,7 +14,7 @@ public class GreetingServer {
         int port = 50051;
         Server server = ServerBuilder.forPort(port)
                 .addService(new GreetingServerImpl())
-                        .build();
+                .build();
 
         server.start();
 
@@ -29,7 +29,4 @@ public class GreetingServer {
 
         server.awaitTermination();
     }
-
-
-
 }

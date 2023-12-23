@@ -3,6 +3,8 @@ package com.vsushko.grpc.calculator.client;
 import com.proto.calculator.AvgRequest;
 import com.proto.calculator.AvgResponse;
 import com.proto.calculator.CalculatorServiceGrpc;
+import com.proto.calculator.MaxRequest;
+import com.proto.calculator.MaxResponse;
 import com.proto.calculator.PrimeRequest;
 import com.proto.calculator.SumRequest;
 import com.proto.calculator.SumResponse;
@@ -34,6 +36,38 @@ public class CalculatorClient {
                 .setNumber(567890).build()).forEachRemaining(response -> {
             System.out.println(response.getPrimeFactor());
         });
+    }
+
+    public static void doMax(ManagedChannel channel) throws InterruptedException {
+        System.out.println("Enter doMax");
+        CalculatorServiceGrpc.CalculatorServiceStub stub = CalculatorServiceGrpc.newStub(channel);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        StreamObserver<MaxRequest> streamObserver = stub.max(new StreamObserver<MaxResponse>() {
+            @Override
+            public void onNext(MaxResponse value) {
+                System.out.println("Max = " + value.getMax());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        Arrays.asList(1, 5, 6, 2, 20).forEach(number -> {
+            streamObserver.onNext(MaxRequest.newBuilder()
+                    .setNumber(number)
+                    .build());
+        });
+        streamObserver.onCompleted();
+        latch.await(3, TimeUnit.SECONDS);
     }
 
     public static void doAvg(ManagedChannel channel) throws InterruptedException {
@@ -87,6 +121,9 @@ public class CalculatorClient {
                 break;
             case "avg":
                 doAvg(channel);
+                break;
+            case "max":
+                doMax(channel);
                 break;
             default:
                 System.out.println("Keyword Invalid: " + args[0]);
