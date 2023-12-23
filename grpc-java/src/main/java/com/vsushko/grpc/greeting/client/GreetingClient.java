@@ -12,11 +12,20 @@ import io.grpc.ManagedChannelBuilder;
 public class GreetingClient {
 
     private static void doGreet(ManagedChannel channel) {
-        System.out.println("Enter doGreet:");
+        System.out.println("Enter doGreet");
         GreetingServiceGrpc.GreetingServiceBlockingStub stub = GreetingServiceGrpc.newBlockingStub(channel);
         GreetingResponse response = stub.greet(GreetingRequest.newBuilder().setFirstName("Vasiliy").build());
 
         System.out.println("Greeting: " + response.getResult());
+    }
+
+    private static void doGreetManyTimes(ManagedChannel channel) {
+        System.out.println("Enter doGreetManyTimes");
+        GreetingServiceGrpc.GreetingServiceBlockingStub stub = GreetingServiceGrpc.newBlockingStub(channel);
+
+        stub.greetManyTimes(GreetingRequest.newBuilder().setFirstName("Vasiliy").build()).forEachRemaining(response -> {
+            System.out.println(response.getResult());
+        });
     }
 
     public static void main(String[] args) {
@@ -33,6 +42,9 @@ public class GreetingClient {
         switch (args[0]) {
             case "greet":
                 doGreet(channel);
+                break;
+            case "greet_many_times":
+                doGreetManyTimes(channel);
                 break;
             default:
                 System.out.println("Keyword Invalid: " + args[0]);
