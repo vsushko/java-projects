@@ -1,5 +1,7 @@
 package com.vsushko.grpc.calculator.server;
 
+import com.proto.calculator.AvgRequest;
+import com.proto.calculator.AvgResponse;
 import com.proto.calculator.CalculatorServiceGrpc;
 import com.proto.calculator.PrimeRequest;
 import com.proto.calculator.PrimeResponse;
@@ -36,5 +38,32 @@ public class CalculatorServerImpl extends CalculatorServiceGrpc.CalculatorServic
             }
         }
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public StreamObserver<AvgRequest> avg(StreamObserver<AvgResponse> responseObserver) {
+        return new StreamObserver<>() {
+            int sum = 0;
+            int count = 0;
+
+            @Override
+            public void onNext(AvgRequest value) {
+                sum += value.getNumber();
+                ++count;
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                responseObserver.onError(t);
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onNext(AvgResponse.newBuilder()
+                        .setResult((double) sum / count)
+                        .build());
+                responseObserver.onCompleted();
+            }
+        };
     }
 }

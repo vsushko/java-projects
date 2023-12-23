@@ -5,6 +5,13 @@ import com.proto.greeting.GreetingResponse;
 import com.proto.greeting.GreetingServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author vsushko
@@ -23,12 +30,47 @@ public class GreetingClient {
         System.out.println("Enter doGreetManyTimes");
         GreetingServiceGrpc.GreetingServiceBlockingStub stub = GreetingServiceGrpc.newBlockingStub(channel);
 
-        stub.greetManyTimes(GreetingRequest.newBuilder().setFirstName("Vasiliy").build()).forEachRemaining(response -> {
-            System.out.println(response.getResult());
-        });
+        stub.greetManyTimes(GreetingRequest.newBuilder()
+                        .setFirstName("Vasiliy")
+                        .build())
+                .forEachRemaining(response -> System.out.println(response.getResult()));
     }
 
-    public static void main(String[] args) {
+    private static void doLongGreet(ManagedChannel channel) throws InterruptedException {
+        System.out.println("Enter doLongGreet");
+        GreetingServiceGrpc.GreetingServiceStub stub = GreetingServiceGrpc.newStub(channel);
+
+        List<String> names = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(1);
+
+        Collections.addAll(names, "Vasiliy", "Test1", "Test2");
+
+        StreamObserver streamObserver = stub.longGreet(new StreamObserver<>() {
+            @Override
+            public void onNext(GreetingResponse response) {
+                System.out.println(response.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+
+        for (String name : names) {
+            streamObserver.onNext(GreetingRequest.newBuilder()
+                    .setFirstName(name)
+                    .build());
+        }
+        streamObserver.onCompleted();
+        latch.await(3, TimeUnit.SECONDS);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
         if (args.length == 0) {
             System.out.println("Need one argument to work");
             return;
@@ -45,6 +87,9 @@ public class GreetingClient {
                 break;
             case "greet_many_times":
                 doGreetManyTimes(channel);
+                break;
+            case "long_greet":
+                doLongGreet(channel);
                 break;
             default:
                 System.out.println("Keyword Invalid: " + args[0]);

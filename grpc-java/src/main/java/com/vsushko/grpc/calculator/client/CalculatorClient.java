@@ -1,11 +1,18 @@
 package com.vsushko.grpc.calculator.client;
 
+import com.proto.calculator.AvgRequest;
+import com.proto.calculator.AvgResponse;
 import com.proto.calculator.CalculatorServiceGrpc;
 import com.proto.calculator.PrimeRequest;
 import com.proto.calculator.SumRequest;
 import com.proto.calculator.SumResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
+
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author vsushko
@@ -29,7 +36,39 @@ public class CalculatorClient {
         });
     }
 
-    public static void main(String[] args) {
+    public static void doAvg(ManagedChannel channel) throws InterruptedException {
+        System.out.println("Enter doPrimes");
+        CalculatorServiceGrpc.CalculatorServiceStub stub = CalculatorServiceGrpc.newStub(channel);
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        StreamObserver<AvgRequest> streamObserver = stub.avg(new StreamObserver<AvgResponse>() {
+            @Override
+            public void onNext(AvgResponse value) {
+                System.out.println("Avg = " + value.getResult());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+        });
+        Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).forEach(number -> {
+            streamObserver.onNext(AvgRequest.newBuilder()
+                    .setNumber(number)
+                    .build());
+        });
+
+        streamObserver.onCompleted();
+        latch.await(3, TimeUnit.SECONDS);
+    }
+
+    public static void main(String[] args) throws InterruptedException {
         if (args.length == 0) {
             System.out.println("Need one argument to work");
             return;
@@ -45,6 +84,9 @@ public class CalculatorClient {
                 break;
             case "primes":
                 doPrimes(channel);
+                break;
+            case "avg":
+                doAvg(channel);
                 break;
             default:
                 System.out.println("Keyword Invalid: " + args[0]);
